@@ -1,0 +1,22 @@
+{
+  "name": "elclark-api",
+  "version": "0.0.1",
+  "main": "index.js",
+  "type": "module",
+  "repository": "https://github.com/ElclarkKuhu/elclark-api",
+  "author": "ElclarkKuhu <elclarkkuhu@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "private": false,
+  "dependencies": {
+    "aws-sdk": "^2.1118.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.3.0",
+    "node-fetch": "^3.2.3"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.0"
+  }
+}
