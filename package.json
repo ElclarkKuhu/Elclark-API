@@ -2,6 +2,9 @@
   "name": "elclark-api",
   "version": "0.0.1",
   "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "type": "module",
   "repository": "https://github.com/ElclarkKuhu/elclark-api",
   "author": "ElclarkKuhu <elclarkkuhu@gmail.com>",
