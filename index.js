@@ -3,8 +3,6 @@ dotenv.config()
 
 import cors from 'cors'
 import express from 'express'
-import mongoose from 'mongoose'
-import bcryptjs from 'bcryptjs'
 
 import auth from './router/auth.js'
 import file from './router/file.js'
@@ -17,9 +15,8 @@ app.use('/auth', auth)
 app.use('/user', user)
 app.use('/file', file)
 
-// app.get('/', (req, res) => {
+app.get('/', (req, res) => {
+    res.redirect('https://elclark.my.id')
+})
 
-// })
-
-app.listen(3200, () => {
-});
+app.listen(process.env.PORT || 80);
