@@ -13,7 +13,19 @@ const router = express.Router()
 router.use(express.json())
 
 router.get('/token/', authenticate, async (req, res) => {
-
+    return await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+            Authorization: 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64')),
+            'content-type': 'application/x-www-form-urlencoded',
+            accept: 'application/json',
+        },
+        body: `refresh_token=${refresh_token}&grant_type=refresh_token&redirect_uri=${redirect_uri}`
+    }).then((response) => response.json()).then((data) => {
+        return {
+            body: data
+        }
+    })
 })
 
 export default router
