@@ -12,7 +12,7 @@ const redirect_uri = process.env.SPOTIFY_REDIRECT_URI
 const router = express.Router()
 router.use(express.json())
 
-router.get('/token/', authenticate, async (req, res) => {
+router.get('/token/', async (req, res) => {
     return await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
