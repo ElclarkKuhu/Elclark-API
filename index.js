@@ -7,6 +7,7 @@ import express from 'express'
 import auth from './router/auth.js'
 import file from './router/file.js'
 import user from './router/user.js'
+import spotify from './router/spotify.js'
 
 const app = express()
 app.use(cors())
@@ -14,6 +15,7 @@ app.use(express.json())
 app.use('/auth', auth)
 app.use('/user', user)
 app.use('/file', file)
+app.use('/spotify', spotify)
 
 app.get('/', (req, res) => {
     res.redirect('https://elclark.my.id')
