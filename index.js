@@ -19,4 +19,8 @@ app.get('/', (req, res) => {
     res.redirect('https://elclark.my.id')
 })
 
+app.get('/ping', (req, res) => {
+    res.status(200).send('pong')
+})
+
 app.listen(process.env.PORT || 80);
