@@ -22,9 +22,7 @@ router.get('/token/', async (req, res) => {
         },
         body: `refresh_token=${refresh_token}&grant_type=refresh_token&redirect_uri=${redirect_uri}`
     }).then((response) => response.json()).then((data) => {
-        return {
-            body: data
-        }
+        res.status(200).send(data)
     })
 })
 
