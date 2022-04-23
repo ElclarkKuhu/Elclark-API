@@ -128,7 +128,7 @@ router.get("/:slug/download", getUserId, async (req, res) => {
     res.redirect(signedUrl)
 })
 
-router.get('/:slug/uploaded', authenticate, async (req, res) => {
+router.post('/:slug/uploaded', authenticate, async (req, res) => {
     const slug = req.params.slug
 
     const data = await File.findOne({ slug }).exec()
