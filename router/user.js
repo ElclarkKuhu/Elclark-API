@@ -18,7 +18,7 @@ router.use(express.json())
 router.get('/', authenticate, async (req, res) => {
     const user = await User.findOne({ _id: req.locals._id }).exec()
     if (!user) {
-        res.status(404)
+        res.sendStatus(404)
         return
     }
 
@@ -30,7 +30,7 @@ router.get("/:user/", async (req, res) => {
     const user = await User.findOne({ username: req.params.user }).exec()
 
     if (!user) {
-        res.status(404)
+        res.sendStatus(404)
         return
     }
 

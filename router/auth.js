@@ -31,16 +31,19 @@ router.post("/login/", (req, res) => {
         username: data.username
     }, (err, user) => {
         if (err) {
-            return res.status(500)
+            res.sendStatus(500)
+            return
         }
 
         if (!user) {
-            return res.status(404)
+            res.sendStatus(404)
+            return
         }
 
         const passwordIsValid = bcryptjs.compareSync(data.password, user.password)
         if (!passwordIsValid) {
-            return res.status(401)
+            res.sendStatus(401)
+            return
         }
 
         const token = jwt.sign({

@@ -39,7 +39,7 @@ router.get('/', authenticate, async (req, res) => {
     const data = await File.find({}).sort('-date').exec()
 
     if (!data) {
-        res.status(404)
+        res.sendStatus(404)
         return
     }
 
@@ -51,7 +51,7 @@ router.post('/', authenticate, async (req, res) => {
     let uid = req.locals._id
 
     if (!data.name) {
-        res.status(400)
+        res.sendStatus(400)
         return
     }
 
@@ -84,17 +84,17 @@ router.get("/:slug", getUserId, async (req, res) => {
 
     const data = await File.findOne({ slug }).exec()
     if (!data) {
-        res.status(404)
+        res.sendStatus(404)
         return
     }
 
     if (!data.uploaded) {
-        res.status(404)
+        res.sendStatus(404)
         return
     }
 
     if (data.visibility === 'private' && data.owner !== req.locals._id) {
-        res.status(403)
+        res.sendStatus(403)
         return
     }
 
@@ -106,17 +106,17 @@ router.get("/:slug/download", getUserId, async (req, res) => {
 
     const data = await File.findOne({ slug }).exec()
     if (!data) {
-        res.status(404)
+        res.sendStatus(404)
         return
     }
 
     if (!data.uploaded) {
-        res.status(404)
+        res.sendStatus(404)
         return
     }
 
     if (data.visibility === 'private' && data.owner !== req.locals._id) {
-        res.status(403)
+        res.sendStatus(403)
         return
     }
 
@@ -133,22 +133,22 @@ router.post('/:slug/uploaded', authenticate, async (req, res) => {
 
     const data = await File.findOne({ slug }).exec()
     if (!data) {
-        res.status(404)
+        res.sendStatus(404)
         return
     }
 
     if (data.uploaded) {
-        res.status(200)
+        res.sendStatus(200)
         return
     }
 
     if (data.owner !== req.locals._id) {
-        res.status(403)
+        res.sendStatus(403)
         return
     }
 
     await File.updateOne({ slug: data.slug }, { uploaded: true }).exec()
-    res.status(200)
+    res.sendStatus(200)
 })
 
 export default router
