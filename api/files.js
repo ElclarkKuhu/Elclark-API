@@ -92,8 +92,61 @@ module.exports = async (req, res) => {
         return
     }
 
+    if (req.method === 'PATCH') {
+        const body = req.body
+        if (!body || !body.slug) {
+            res.status(400).send('Bad Request')
+            return
+        }
+
+        const { slug } = body
+        const exists = await File.exists({ slug: slug }).exec()
+        if (!exists) {
+            res.status(404).send('Not Found')
+            return
+        }
+
+        if (body.name) {
+            const file = await File.findOne({ slug: slug }).exec()
+
+            // rename the file on S3
+            const Key = `${id}/${slug}/${body.name}`
+            await client.copyObject({
+                Bucket,
+                CopySource: file.key,
+                Key,
+            }).promise()
+
+            // delete the old file on S3
+            await client.deleteObject({
+                Bucket,
+                Key: file.key,
+            }).promise()
+
+            // update the file in the database
+            file.name = body.name
+            file.key = Key
+            await file.save()
+        }
+
+        if (body.visibility) {
+            await File.updateOne({ slug: slug }, { visibility: body.visibility }).exec()
+        }
+
+        if (body.uploaded) {
+            await File.updateOne({ slug: slug }, { uploaded: body.uploaded }).exec()
+        }
+
+        if (body.owner) {
+            await File.updateOne({ slug: slug }, { owner: body.owner }).exec()
+        }
+
+        res.status(200).send('OK')
+    }
+
     if (req.method === 'DELETE') {
         // TODO: Delete file
+        return
     }
 
     res.status(405).send()
