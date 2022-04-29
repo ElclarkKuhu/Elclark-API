@@ -1,3 +1,4 @@
+const Cors = require('cors')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const S3 = require('aws-sdk/clients/s3')
@@ -8,6 +9,10 @@ const secretAccessKey = process.env.S3_SECRET
 const endpoint = process.env.S3_ENDPOINT
 const region = process.env.S3_REGION
 const Bucket = process.env.S3_BUCKET
+
+const cors = Cors({
+    methods: ['GET', 'HEAD', 'POST', 'PATCH', 'DELETE'],
+})
 
 const { Schema } = mongoose
 const fileSchema = new Schema({
@@ -39,7 +44,21 @@ const client = new S3({
     httpOptions: { timeout: 0 }
 })
 
+function runMiddleware(req, res, fn) {
+    return new Promise((resolve, reject) => {
+        fn(req, res, (result) => {
+            if (result instanceof Error) {
+                return reject(result)
+            }
+
+            return resolve(result)
+        })
+    })
+}
+
 module.exports = async (req, res) => {
+    await runMiddleware(req, res, cors)
+
     const auth = authenticate(req.headers.authorization)
     if (!auth) return res.status(401).send('Unauthorized')
     const { id } = auth
@@ -121,7 +140,7 @@ module.exports = async (req, res) => {
         //     }).promise()
 
         //     console.log(Bucket)
-            
+
         //     // delete the old file on S3
         //     await client.deleteObject({
         //         Bucket,
