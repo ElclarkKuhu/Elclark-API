@@ -39,7 +39,6 @@ const client = new S3({
     httpOptions: { timeout: 0 }
 })
 
-
 module.exports = async (req, res) => {
     const { id } = authenticate(req.headers.authorization)
     if (!id) return res.status(401).send('Unauthorized')
