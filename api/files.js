@@ -106,28 +106,35 @@ module.exports = async (req, res) => {
             return
         }
 
-        if (body.name) {
-            const file = await File.findOne({ slug: slug }).exec()
+        // TODO: FIX RENAME (POSSIBLY STORJ SIDE ISSUE)
+        // if (body.name) {
+        //     const file = await File.findOne({ slug: slug }).exec()
 
-            // rename the file on S3
-            const Key = `${id}/${slug}/${body.name}`
-            await client.copyObject({
-                Bucket,
-                CopySource: file.key,
-                Key,
-            }).promise()
+        //     console.log(Bucket)
 
-            // delete the old file on S3
-            await client.deleteObject({
-                Bucket,
-                Key: file.key,
-            }).promise()
+        //     // rename the file on S3
+        //     const Key = `${id}/${slug}/${body.name}`
+        //     await client.copyObject({
+        //         Bucket,
+        //         CopySource: file.key,
+        //         Key,
+        //     }).promise()
 
-            // update the file in the database
-            file.name = body.name
-            file.key = Key
-            await file.save()
-        }
+        //     console.log(Bucket)
+            
+        //     // delete the old file on S3
+        //     await client.deleteObject({
+        //         Bucket,
+        //         Key: file.key,
+        //     }).promise()
+
+        //     console.log(Bucket)
+
+        //     // update the file in the database
+        //     file.name = body.name
+        //     file.key = Key
+        //     await file.save()
+        // }
 
         if (body.visibility) {
             await File.updateOne({ slug: slug }, { visibility: body.visibility }).exec()
