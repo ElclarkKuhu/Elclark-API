@@ -40,8 +40,9 @@ const client = new S3({
 })
 
 module.exports = async (req, res) => {
-    const { id } = authenticate(req.headers.authorization)
-    if (!id) return res.status(401).send('Unauthorized')
+    const auth = authenticate(req.headers.authorization)
+    if (!auth) return res.status(401).send('Unauthorized')
+    const { id } = auth
 
     if (req.method === 'GET') {
         const data = await File.find({}).sort('-date').exec()
