@@ -38,7 +38,8 @@ module.exports = async (req, res) => {
 
     if (req.method === 'GET') {
         const data = await File.find({}).sort('-date').exec()
-        return res.status(200).json(data)
+        res.status(200).json(data)
+        return
     }
 
     if (req.method === 'POST') {
