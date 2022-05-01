@@ -6,6 +6,8 @@ const MONGO_DB = process.env.MONGO_DB
 const mongo = new MongoClient(MONGO_URI)
 
 module.exports = async (req, res) => {
+    const auth = authenticate(req.headers.authorization)
+
     if (req.method === 'OPTIONS') {
         return res.status(200).send('ok')
     }
@@ -18,7 +20,7 @@ module.exports = async (req, res) => {
 
         try {
             await mongo.connect()
-            file = await mongo.db(MONGO_DB).collection('files').find({ slug: data.slug })
+            file = await mongo.db(MONGO_DB).collection('files').findOne({ slug: data.slug })
             if (!file) return res.status(404).send('Not Found')
         } catch (err) {
             console.log(err)
@@ -28,11 +30,7 @@ module.exports = async (req, res) => {
         }
 
         if (file.visibility === 'private') {
-            if (!data.token) return res.status(401).send('Unauthorized')
-
-            const auth = authenticate(data.token)
             if (!auth) return res.status(401).send('Unauthorized')
-
             if (auth.id !== file.owner) return res.status(401).send('Unauthorized')
         }
 

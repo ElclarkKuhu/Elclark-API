@@ -9,8 +9,7 @@ const MONGO_URI = process.env.MONGO_URI
 const MONGO_DB = process.env.MONGO_DB
 const mongo = new MongoClient(MONGO_URI)
 
-module.exports = async (req, res) => {
-    // Handle Preflight Requests
+module.exports = async (req, res) => {    
     if (req.method === 'OPTIONS') {
         res.status(200).send('ok')
         return

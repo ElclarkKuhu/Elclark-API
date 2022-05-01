@@ -24,7 +24,6 @@ const client = new S3({
 })
 
 module.exports = async (req, res) => {
-    // Handle Preflight Requests
     if (req.method === 'OPTIONS') {
         return res.status(200).send('ok')
     }
@@ -42,7 +41,9 @@ module.exports = async (req, res) => {
                 sort: {
                     date: -1
                 }
-            })
+            }).toArray()
+
+            if (!files) return res.status(404).send('Not Found')
         } catch (err) {
             console.log(err)
             return res.status(500).send('Internal Server Error')
