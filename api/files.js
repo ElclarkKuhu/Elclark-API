@@ -1,8 +1,9 @@
-const jwt = require('jsonwebtoken')
-const mongoose = require('mongoose')
+const { MongoClient } = require('mongodb')
 const S3 = require('aws-sdk/clients/s3')
-const File = require('../models/files')
 const authenticate = require('../components/authenticate')
+
+const MONGO_URI = process.env.MONGO_URI
+const MONGO_DB = process.env.MONGO_DB
 
 const accessKeyId = process.env.S3_KEY
 const secretAccessKey = process.env.S3_SECRET
@@ -10,11 +11,7 @@ const endpoint = process.env.S3_ENDPOINT
 const region = process.env.S3_REGION
 const Bucket = process.env.S3_BUCKET
 
-main().catch(err => console.log(err))
-async function main() {
-    mongoose.connect(process.env.MONGO_URI)
-}
-
+const mongo = new MongoClient(MONGO_URI)
 const client = new S3({
     region,
     accessKeyId,
@@ -37,9 +34,23 @@ module.exports = async (req, res) => {
     const { id } = auth
 
     if (req.method === 'GET') {
-        const data = await File.find({}).sort('-date').exec()
-        conosle.log(data)
-        return res.status(200).json(data)
+        let files
+
+        try {
+            await mongo.connect()
+            files = mongo.db(MONGO_DB).collection('files').find({}, {
+                sort: {
+                    date: -1
+                }
+            })
+        } catch (err) {
+            console.log(err)
+            return res.status(500).send('Internal Server Error')
+        } finally {
+            await mongo.close()
+        }
+
+        return res.status(200).json(files)
     }
 
     if (req.method === 'POST') {
@@ -50,10 +61,18 @@ module.exports = async (req, res) => {
         }
 
         const { name, slug, size, type, visibility } = body
-        const exists = await File.exists({ slug: slug }).exec()
-        if (exists) {
-            res.status(409).send('Conflict')
-            return
+
+        try {
+            await mongo.connect()
+            const exists = await mongo.db(MONGO_DB).collection('files').findOne({ slug: slug })
+
+            if (exists) {
+                await mongo.close()
+                return res.status(409).send('Conflict')
+            }
+        } catch (err) {
+            console.log(err)
+            return res.status(500).send('Internal Server Error')
         }
 
         const Key = `${id}/${slug}/${name}`
@@ -62,17 +81,24 @@ module.exports = async (req, res) => {
             Key,
         })
 
-        let file = new File({
-            owner: id,
-            key: Key,
-            name,
-            size,
-            visibility,
-            slug,
-            type,
-            uploaded: false,
-        })
-        file = await file.save()
+        try {
+            await mongo.db(MONGO_DB).collection('files').insertOne({
+                owner: id,
+                key: Key,
+                name,
+                slug,
+                size,
+                type,
+                visibility,
+                uploaded: false,
+                date: new Date()
+            })
+        } catch (err) {
+            console.log(err)
+            return res.status(500).send('Internal Server Error')
+        } finally {
+            await mongo.close()
+        }
 
         return res.status(200).json({
             name: name,
@@ -88,9 +114,17 @@ module.exports = async (req, res) => {
         }
 
         const { slug } = body
-        const exists = await File.exists({ slug: slug }).exec()
-        if (!exists) {
-            return res.status(404).send('Not Found')
+        try {
+            await mongo.connect()
+            const exists = await mongo.db(MONGO_DB).collection('files').findOne({ slug: slug })
+
+            if (!exists) {
+                await mongo.close()
+                return res.status(404).send('Not Found')
+            }
+        } catch (err) {
+            console.log(err)
+            return res.status(500).send('Internal Server Error')
         }
 
         // TODO: FIX RENAME (POSSIBLY STORJ SIDE ISSUE)
@@ -124,15 +158,49 @@ module.exports = async (req, res) => {
         // }
 
         if (body.visibility) {
-            await File.updateOne({ slug: slug }, { visibility: body.visibility }).exec()
+            try {
+                await mongo.db(MONGO_DB).collection('files').updateOne({ slug: slug }, {
+                    $set: {
+                        visibility: body.visibility
+                    }
+                })
+            } catch (error) {
+                console.log(error)
+                return res.status(500).send('Internal Server Error')
+            }
         }
 
         if (body.uploaded) {
-            await File.updateOne({ slug: slug }, { uploaded: body.uploaded }).exec()
+            try {
+                await mongo.db(MONGO_DB).collection('files').updateOne({ slug: slug }, {
+                    $set: {
+                        uploaded: body.uploaded
+                    }
+                })
+            } catch (error) {
+                console.log(error)
+                return res.status(500).send('Internal Server Error')
+            }
         }
 
         if (body.owner) {
-            await File.updateOne({ slug: slug }, { owner: body.owner }).exec()
+            try {
+                await mongo.db(MONGO_DB).collection('files').updateOne({ slug: slug }, {
+                    $set: {
+                        owner: body.owner
+                    }
+                })
+            } catch (error) {
+                console.log(error)
+                return res.status(500).send('Internal Server Error')
+            }
+        }
+
+        try {
+            await mongo.close()
+        } catch (err) {
+            console.log(err)
+            return res.status(500).send('Internal Server Error')
         }
 
         return res.status(200).send('OK')

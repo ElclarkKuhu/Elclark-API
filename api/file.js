@@ -1,11 +1,9 @@
-const mongoose = require('mongoose')
+const { MongoClient } = require('mongodb')
 const authenticate = require('../components/authenticate')
-const File = require('../models/files')
 
-main().catch(err => console.log(err))
-async function main() {
-    mongoose.connect(process.env.MONGO_URI)
-}
+const MONGO_URI = process.env.MONGO_URI
+const MONGO_DB = process.env.MONGO_DB
+const mongo = new MongoClient(MONGO_URI)
 
 module.exports = async (req, res) => {
     if (req.method === 'OPTIONS') {
@@ -13,12 +11,22 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'GET') {
+        let file
         let data = req.body
 
         if (!data.slug) return res.status(400).send('Bad Request')
 
-        let file = await File.find({ slug: data.slug }).exec()
-        if (!file) return res.status(404).send('Not Found')
+        try {
+            await mongo.connect()
+            file = mongo.db(MONGO_DB).collection('files').find({ slug: data.slug })
+
+            if (!file) return res.status(404).send('Not Found')
+        } catch (err) {
+            console.log(err)
+            return res.status(500).send('Internal Server Error')
+        } finally {
+            await mongo.close()
+        }
 
         if (file.visibility === 'private') {
             if (!data.token) return res.status(401).send('Unauthorized')

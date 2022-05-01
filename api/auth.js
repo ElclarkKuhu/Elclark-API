@@ -1,15 +1,13 @@
 const jwt = require('jsonwebtoken')
 const bcryptjs = require('bcryptjs')
-const mongoose = require('mongoose')
-const User = require('../models/users')
+const { MongoClient } = require('mongodb')
 
 const tokenSecret = process.env.TOKEN_SECRET
 const expiresIn = 60 * 60 * 24 * 7 // 1 week
 
-main().catch(err => console.log(err))
-async function main() {
-    mongoose.connect(process.env.MONGO_URI)
-}
+const MONGO_URI = process.env.MONGO_URI
+const MONGO_DB = process.env.MONGO_DB
+const mongo = new MongoClient(MONGO_URI)
 
 module.exports = async (req, res) => {
     // Handle Preflight Requests
@@ -19,15 +17,21 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'POST') {
+        let user
         const body = req.body
 
         if (!body.username || !body.password) {
             return res.status(400).send('Bad Request')
         }
 
-        const user = await User.findOne({ username: body.username }).exec()
-        if (!user) {
-            return res.status(404).send('Not Found')
+        try {
+            await mongo.connect()
+            user = mongo.db(MONGO_DB).collection('users').findOne({ username: body.username })
+        } catch (err) {
+            console.log(err)
+            return res.status(500).send('Internal Server Error')
+        } finally {
+            await mongo.close()
         }
 
         const valid = await bcryptjs.compare(body.password, user.password)
