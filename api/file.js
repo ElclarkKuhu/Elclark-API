@@ -18,8 +18,7 @@ module.exports = async (req, res) => {
 
         try {
             await mongo.connect()
-            file = mongo.db(MONGO_DB).collection('files').find({ slug: data.slug })
-
+            file = await mongo.db(MONGO_DB).collection('files').find({ slug: data.slug })
             if (!file) return res.status(404).send('Not Found')
         } catch (err) {
             console.log(err)

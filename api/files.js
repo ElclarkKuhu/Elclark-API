@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
 
         try {
             await mongo.connect()
-            files = mongo.db(MONGO_DB).collection('files').find({}, {
+            files = await mongo.db(MONGO_DB).collection('files').find({}, {
                 sort: {
                     date: -1
                 }
