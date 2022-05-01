@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
         let user
         const body = req.body
 
-        if (!body.username || !body.password) {
+        if (!body || !body.username || !body.password) {
             return res.status(400).send('Bad Request')
         }
 

@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
         let file
         let data = req.body
 
-        if (!data.slug) return res.status(400).send('Bad Request')
+        if (!data || !data.slug) return res.status(400).send('Bad Request')
 
         try {
             await mongo.connect()
