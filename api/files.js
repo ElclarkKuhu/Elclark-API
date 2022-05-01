@@ -42,7 +42,8 @@ const client = new S3({
 module.exports = async (req, res) => {
     // Handle Preflight Requests
     if (req.method === 'OPTIONS') {
-        return res.status(200).send('ok');
+        res.status(200).send('ok')
+        return
     }
 
     const auth = authenticate(req.headers.authorization)
