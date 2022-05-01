@@ -1,27 +1,14 @@
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const S3 = require('aws-sdk/clients/s3')
+const File = require('./models/files')
+const authenticate = require('.common/authenticate')
 
-const tokenSecret = process.env.TOKEN_SECRET
 const accessKeyId = process.env.S3_KEY
 const secretAccessKey = process.env.S3_SECRET
 const endpoint = process.env.S3_ENDPOINT
 const region = process.env.S3_REGION
 const Bucket = process.env.S3_BUCKET
-
-const { Schema } = mongoose
-const fileSchema = new Schema({
-    key: String,
-    name: String,
-    owner: String,
-    size: Number,
-    slug: String,
-    type: String,
-    uploaded: Boolean,
-    visibility: String,
-    date: { type: Date, default: Date.now },
-})
-const File = mongoose.model('File', fileSchema)
 
 main().catch(err => console.log(err))
 async function main() {
@@ -42,8 +29,7 @@ const client = new S3({
 module.exports = async (req, res) => {
     // Handle Preflight Requests
     if (req.method === 'OPTIONS') {
-        res.status(200).send('ok')
-        return
+        return res.status(200).send('ok')
     }
 
     const auth = authenticate(req.headers.authorization)
@@ -52,8 +38,7 @@ module.exports = async (req, res) => {
 
     if (req.method === 'GET') {
         const data = await File.find({}).sort('-date').exec()
-        res.status(200).json(data)
-        return
+        return res.status(200).json(data)
     }
 
     if (req.method === 'POST') {
@@ -88,27 +73,23 @@ module.exports = async (req, res) => {
         })
         file = await file.save()
 
-        res.status(200).json({
+        return res.status(200).json({
             name: name,
             url: signedUrl,
             key: Key,
         })
-
-        return
     }
 
     if (req.method === 'PATCH') {
         const body = req.body
         if (!body || !body.slug) {
-            res.status(400).send('Bad Request')
-            return
+            return res.status(400).send('Bad Request')
         }
 
         const { slug } = body
         const exists = await File.exists({ slug: slug }).exec()
         if (!exists) {
-            res.status(404).send('Not Found')
-            return
+            return res.status(404).send('Not Found')
         }
 
         // TODO: FIX RENAME (POSSIBLY STORJ SIDE ISSUE)
@@ -153,28 +134,12 @@ module.exports = async (req, res) => {
             await File.updateOne({ slug: slug }, { owner: body.owner }).exec()
         }
 
-        res.status(200).send('OK')
+        return res.status(200).send('OK')
     }
 
     if (req.method === 'DELETE') {
         // TODO: Delete file
-        return
     }
 
-    res.status(405).send()
-}
-
-function authenticate(token) {
-    if (!token) return
-    token = token.split(' ')[1]
-    if (token == null) return
-
-    let decoded
-    try {
-        decoded = jwt.verify(token, tokenSecret)
-    } catch (err) {
-        return
-    }
-
-    return decoded
+    res.status(405).send('Method Not Allowed')
 }

@@ -1,25 +1,10 @@
 const jwt = require('jsonwebtoken')
 const bcryptjs = require('bcryptjs')
 const mongoose = require('mongoose')
+const User = require('./models/users')
 
 const tokenSecret = process.env.TOKEN_SECRET
 const expiresIn = 60 * 60 * 24 * 7 // 1 week
-
-const { Schema } = mongoose
-const userSchema = new Schema({
-    username: String,
-    password: String,
-    email: String,
-    firstName: String,
-    lastName: String,
-    avatar: String,
-    role: String,
-    bio: String,
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
-})
-
-const User = mongoose.model('User', userSchema)
 
 main().catch(err => console.log(err))
 async function main() {
@@ -51,8 +36,8 @@ module.exports = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id }, tokenSecret, { expiresIn })
-        res.status(200).json({ token, expiresIn })
+        return res.status(200).json({ token, expiresIn })
     }
 
-    res.status(405).send()
+    res.status(405).send('Method Not Allowed')
 }
