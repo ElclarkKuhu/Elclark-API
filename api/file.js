@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
-const File = require('./models/files')
+const authenticate = require('../components/authenticate')
+const File = require('../models/files')
 
 main().catch(err => console.log(err))
 async function main() {

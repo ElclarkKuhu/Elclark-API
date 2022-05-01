@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const bcryptjs = require('bcryptjs')
 const mongoose = require('mongoose')
-const User = require('./models/users')
+const User = require('../models/users')
 
 const tokenSecret = process.env.TOKEN_SECRET
 const expiresIn = 60 * 60 * 24 * 7 // 1 week

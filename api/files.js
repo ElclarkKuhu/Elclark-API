@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const S3 = require('aws-sdk/clients/s3')
-const File = require('./models/files')
-const authenticate = require('.common/authenticate')
+const File = require('../models/files')
+const authenticate = require('../components/authenticate')
 
 const accessKeyId = process.env.S3_KEY
 const secretAccessKey = process.env.S3_SECRET
