@@ -38,8 +38,8 @@ module.exports = async (req, res) => {
 
     if (req.method === 'GET') {
         const data = await File.find({}).sort('-date').exec()
-        res.status(200).json(data)
-        return
+        conosle.log(data)
+        return res.status(200).json(data)
     }
 
     if (req.method === 'POST') {
