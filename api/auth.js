@@ -27,6 +27,7 @@ module.exports = async (req, res) => {
         try {
             await mongo.connect()
             user = mongo.db(MONGO_DB).collection('users').findOne({ username: body.username })
+            if (!user) return res.status(401).send('Unauthorized')
         } catch (err) {
             console.log(err)
             return res.status(500).send('Internal Server Error')
