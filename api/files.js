@@ -40,6 +40,11 @@ const client = new S3({
 })
 
 module.exports = async (req, res) => {
+    // Handle Preflight Requests
+    if (req.method === 'OPTIONS') {
+        return res.status(200).send('ok');
+    }
+
     const auth = authenticate(req.headers.authorization)
     if (!auth) return res.status(401).send('Unauthorized')
     const { id } = auth
@@ -121,7 +126,7 @@ module.exports = async (req, res) => {
         //     }).promise()
 
         //     console.log(Bucket)
-            
+
         //     // delete the old file on S3
         //     await client.deleteObject({
         //         Bucket,
