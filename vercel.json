@@ -1,12 +1,26 @@
 {
-	"rewrites": [
+	"redirects": [
 		{
 			"source": "/",
-			"destination": "/index"
+			"destination": "https://elclark.my.id/"
+		}
+	],
+	"rewrites": [
+		{
+			"source": "/auth",
+			"destination": "/api/auth"
 		},
 		{
-			"source": "/(.*)",
-			"destination": "/api/(.*)"
+			"source": "/file",
+			"destination": "/api/file"
+		},
+		{
+			"source": "/files",
+			"destination": "/api/files"
+		},
+		{
+			"source": "/spotify/token.json",
+			"destination": "/api/spotify/token.json"
 		}
 	],
 	"headers": [
