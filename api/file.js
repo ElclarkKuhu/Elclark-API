@@ -1,8 +1,6 @@
 import MongoDB from '../components/database.js'
 import authenticate from '../components/authenticate.js'
 
-
-
 export default async (req, res) => {
     const auth = authenticate(req.headers.authorization)
 
@@ -17,10 +15,11 @@ export default async (req, res) => {
 
         const { slug } = data
         const file = await MongoDB('findOne', 'files', { filter: { slug } })
+        if (!file.document) return res.status(404).send('Not Found')
 
-        if (file.visibility === 'private') {
+        if (file.document.visibility === 'private') {
             if (!auth) return res.status(401).send('Unauthorized')
-            if (auth.id !== file.owner) return res.status(401).send('Unauthorized')
+            if (auth.id !== file.document.owner) return res.status(401).send('Unauthorized')
         }
 
         return res.status(200).json(file)
