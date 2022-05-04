@@ -1,14 +1,16 @@
 {
-  "name": "elclark-api",
-  "version": "0.2.2",
-  "dependencies": {
-    "aws-sdk": "^2.1122.0",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^8.5.1",
-    "mongodb": "^4.5.0"
-  },
-  "devDependencies": {
-    "@vercel/node": "^1.14.1"
-  },
-  "license": "GPL-3.0-or-later"
+    "name": "elclark-api",
+    "version": "0.2.5",
+    "type": "module",
+    "dependencies": {
+        "aws-sdk": "^2.1122.0",
+        "bcryptjs": "^2.4.3",
+        "jsonwebtoken": "^8.5.1",
+        "mongodb": "^4.5.0",
+        "node-fetch": "^3.2.4"
+    },
+    "devDependencies": {
+        "@vercel/node": "^1.14.1"
+    },
+    "license": "GPL-3.0-or-later"
 }

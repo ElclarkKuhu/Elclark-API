@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken')
-const bcryptjs = require('bcryptjs')
-const { MongoClient } = require('mongodb')
+import jwt from 'jsonwebtoken'
+import bcryptjs from 'bcryptjs'
+import { MongoClient } from 'mongodb'
 
 const tokenSecret = process.env.TOKEN_SECRET
 const expiresIn = 60 * 60 * 24 * 7 // 1 week
@@ -9,7 +9,7 @@ const MONGO_URI = process.env.MONGO_URI
 const MONGO_DB = process.env.MONGO_DB
 const mongo = new MongoClient(MONGO_URI)
 
-module.exports = async (req, res) => {    
+export default async (req, res) => {    
     if (req.method === 'OPTIONS') {
         res.status(200).send('ok')
         return

@@ -1,8 +1,8 @@
-const jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken'
 
 const tokenSecret = process.env.TOKEN_SECRET
 
-module.exports = function authenticate(token) {
+export default function authenticate(token) {
     if (!token) return
     token = token.split(' ')[1]
     if (token == null) return

@@ -1,11 +1,11 @@
-const { MongoClient } = require('mongodb')
-const authenticate = require('../components/authenticate')
+import { MongoClient } from 'mongodb'
+import authenticate from '../components/authenticate.js'
 
 const MONGO_URI = process.env.MONGO_URI
 const MONGO_DB = process.env.MONGO_DB
 const mongo = new MongoClient(MONGO_URI)
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
     const auth = authenticate(req.headers.authorization)
 
     if (req.method === 'OPTIONS') {

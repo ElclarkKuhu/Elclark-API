@@ -1,6 +1,6 @@
-const { MongoClient } = require('mongodb')
-const S3 = require('aws-sdk/clients/s3')
-const authenticate = require('../components/authenticate')
+import { MongoClient } from 'mongodb'
+import S3 from 'aws-sdk/clients/s3.js'
+import authenticate from '../components/authenticate.js'
 
 const MONGO_URI = process.env.MONGO_URI
 const MONGO_DB = process.env.MONGO_DB
@@ -23,7 +23,7 @@ const client = new S3({
     httpOptions: { timeout: 0 }
 })
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
     if (req.method === 'OPTIONS') {
         return res.status(200).send('ok')
     }

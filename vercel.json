@@ -5,8 +5,8 @@
 			"destination": "/index"
 		},
 		{
-			"source": "/:path",
-			"destination": "/api/:path"
+			"source": "/(.*)",
+			"destination": "/api/(.*)"
 		}
 	],
 	"headers": [
