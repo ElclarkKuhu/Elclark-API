@@ -1,9 +1,7 @@
-import { MongoClient } from 'mongodb'
+import MongoDB from '../components/database.js'
 import authenticate from '../components/authenticate.js'
 
-const MONGO_URI = process.env.MONGO_URI
-const MONGO_DB = process.env.MONGO_DB
-const mongo = new MongoClient(MONGO_URI)
+
 
 export default async (req, res) => {
     const auth = authenticate(req.headers.authorization)
@@ -13,21 +11,12 @@ export default async (req, res) => {
     }
 
     if (req.method === 'GET') {
-        let file
         let data = req.body
 
         if (!data || !data.slug) return res.status(400).send('Bad Request')
 
-        try {
-            await mongo.connect()
-            file = await mongo.db(MONGO_DB).collection('files').findOne({ slug: data.slug })
-            if (!file) return res.status(404).send('Not Found')
-        } catch (err) {
-            console.log(err)
-            return res.status(500).send('Internal Server Error')
-        } finally {
-            await mongo.close()
-        }
+        const { slug } = data
+        const file = await MongoDB('findOne', 'files', { filter: { slug } })
 
         if (file.visibility === 'private') {
             if (!auth) return res.status(401).send('Unauthorized')
