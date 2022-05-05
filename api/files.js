@@ -1,23 +1,6 @@
-import S3 from 'aws-sdk/clients/s3.js'
 import MongoDB from '../components/database.js'
+import { S3Client, Bucket } from '../components/s3.js'
 import authenticate from '../components/authenticate.js'
-
-const accessKeyId = process.env.S3_KEY
-const secretAccessKey = process.env.S3_SECRET
-const endpoint = process.env.S3_ENDPOINT
-const region = process.env.S3_REGION
-const Bucket = process.env.S3_BUCKET
-
-const client = new S3({
-    region,
-    accessKeyId,
-    secretAccessKey,
-    endpoint,
-    s3ForcePathStyle: true,
-    signatureVersion: "v4",
-    connectTimeout: 0,
-    httpOptions: { timeout: 0 }
-})
 
 export default async (req, res) => {
     if (req.method === 'OPTIONS') {
@@ -47,7 +30,7 @@ export default async (req, res) => {
         }
 
         const Key = `${id}/${slug}/${name}`
-        const signedUrl = client.getSignedUrl('putObject', {
+        const signedUrl = S3Client.getSignedUrl('putObject', {
             Bucket,
             Key,
         })
@@ -96,7 +79,7 @@ export default async (req, res) => {
 
         //     // rename the file on S3
         //     const Key = `${id}/${slug}/${body.name}`
-        //     await client.copyObject({
+        //     await S3Client.copyObject({
         //         Bucket,
         //         CopySource: file.key,
         //         Key,
@@ -105,7 +88,7 @@ export default async (req, res) => {
         //     console.log(Bucket)
 
         //     // delete the old file on S3
-        //     await client.deleteObject({
+        //     await S3Client.deleteObject({
         //         Bucket,
         //         Key: file.key,
         //     }).promise()
