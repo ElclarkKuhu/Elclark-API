@@ -11,6 +11,7 @@ export default async (req, res) => {
 
     if (req.method === 'POST') {
         let data = req.body
+
         if (!data || !data.key) return res.status(400).send('Bad Request')
 
         const { key } = data

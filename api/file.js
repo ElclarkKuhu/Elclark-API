@@ -21,7 +21,7 @@ export default async (req, res) => {
             if (auth.id !== file.document.owner) return res.status(401).send('Unauthorized')
         }
 
-        return res.status(200).json(file)
+        return res.status(200).json(file.document)
     }
 
     res.status(405).send('Method Not Allowed')
