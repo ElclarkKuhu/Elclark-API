@@ -17,12 +17,12 @@ export default async (req, res) => {
     }
 
     if (req.method === 'POST') {
-        const body = req.body
-        if (!body || !body.name || !body.slug || !body.size || !body.type || !body.visibility) {
+        const data = req.body
+        if (!data || !data.name || !data.slug || !data.size || !data.type || !data.visibility) {
             return res.status(400).send('Bad Request')
         }
 
-        const { name, slug, size, type, visibility } = body
+        const { name, slug, size, type, visibility } = data
 
         const exists = await MongoDB('findOne', 'files', { filter: { slug } })
         if (exists.document) {
@@ -60,25 +60,25 @@ export default async (req, res) => {
     }
 
     if (req.method === 'PATCH') {
-        const body = req.body
-        if (!body || !body.slug) {
+        const data = req.body
+        if (!data || !data.slug) {
             return res.status(400).send('Bad Request')
         }
 
-        const { slug } = body
+        const { slug } = data
         const exists = await MongoDB('findOne', 'files', { filter: { slug } })
         if (!exists.document) {
             return res.status(404).send('Not Found')
         }
 
         // TODO: FIX RENAME (POSSIBLY STORJ SIDE ISSUE)
-        // if (body.name) {
+        // if (data.name) {
         //     const file = await File.findOne({ slug: slug }).exec()
 
         //     console.log(Bucket)
 
         //     // rename the file on S3
-        //     const Key = `${id}/${slug}/${body.name}`
+        //     const Key = `${id}/${slug}/${data.name}`
         //     await S3Client.copyObject({
         //         Bucket,
         //         CopySource: file.key,
@@ -96,21 +96,21 @@ export default async (req, res) => {
         //     console.log(Bucket)
 
         //     // update the file in the database
-        //     file.name = body.name
+        //     file.name = data.name
         //     file.key = Key
         //     await file.save()
         // }
 
-        if (body.visibility) {
-            MongoDB('updateOne', 'files', { filter: { slug }, update: { $set: { visibility: body.visibility } } })
+        if (data.visibility) {
+            MongoDB('updateOne', 'files', { filter: { slug }, update: { $set: { visibility: data.visibility } } })
         }
 
-        if (body.uploaded) {
-            MongoDB('updateOne', 'files', { filter: { slug }, update: { $set: { uploaded: body.uploaded } } })
+        if (data.uploaded) {
+            MongoDB('updateOne', 'files', { filter: { slug }, update: { $set: { uploaded: data.uploaded } } })
         }
 
-        if (body.owner) {
-            MongoDB('updateOne', 'files', { filter: { slug }, update: { $set: { owner: body.owner } } })
+        if (data.owner) {
+            MongoDB('updateOne', 'files', { filter: { slug }, update: { $set: { owner: data.owner } } })
         }
 
         return res.status(200).send('OK')

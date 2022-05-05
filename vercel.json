@@ -11,6 +11,10 @@
 			"destination": "/api/auth"
 		},
 		{
+			"source": "/user",
+			"destination": "/api/user"
+		},
+		{
 			"source": "/file",
 			"destination": "/api/file"
 		},

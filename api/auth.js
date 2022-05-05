@@ -7,22 +7,21 @@ const expiresIn = 60 * 60 * 24 * 7 // 1 week
 
 export default async (req, res) => {
     if (req.method === 'OPTIONS') {
-        res.status(200).send('ok')
-        return
+        return res.status(200).send('ok')
     }
 
     if (req.method === 'POST') {
-        const body = req.body
+        const data = req.body
 
-        if (!body || !body.username || !body.password) {
+        if (!data || !data.username || !data.password) {
             return res.status(400).send('Bad Request')
         }
 
-        const response = await MongoDB('findOne', 'users', { filter: { username: body.username } })
+        const response = await MongoDB('findOne', 'users', { filter: { username: data.username } })
         if (!response.document) return res.status(401).send('Unauthorized')
         const user = response.document
 
-        const valid = await bcryptjs.compare(body.password, user.password)
+        const valid = await bcryptjs.compare(data.password, user.password)
         if (!valid) {
             return res.status(401).send('Unauthorized')
         }
