@@ -19,7 +19,7 @@ export default async (req, res) => {
         }
 
         const response = await MongoDB('findOne', 'users', { filter: { username: body.username } })
-        if (!response.document) res.status(401).send('Unauthorized')
+        if (!response.document) return res.status(401).send('Unauthorized')
         const user = response.document
 
         const valid = await bcryptjs.compare(body.password, user.password)
