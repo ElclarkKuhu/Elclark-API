@@ -15,6 +15,10 @@
 			"destination": "/api/file"
 		},
 		{
+			"source": "/file/url",
+			"destination": "/api/file/url"
+		},
+		{
 			"source": "/files",
 			"destination": "/api/files"
 		},

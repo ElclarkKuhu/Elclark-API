@@ -1,5 +1,4 @@
 import MongoDB from '../components/database.js'
-import { S3Client, Bucket } from '../components/s3.js'
 import authenticate from '../components/authenticate.js'
 
 export default async (req, res) => {
@@ -7,7 +6,7 @@ export default async (req, res) => {
         return res.status(200).send('ok')
     }
 
-    if (req.method === 'GET') {
+    if (req.method === 'POST') {
         let data = req.body
         if (!data || !data.slug) return res.status(400).send('Bad Request')
 
@@ -23,22 +22,6 @@ export default async (req, res) => {
         }
 
         return res.status(200).json(file)
-    }
-
-    if (req.method === 'POST') {
-        let data = req.body
-        if (!data || !data.key) return res.status(400).send('Bad Request')
-
-        const { key } = data
-        const url = S3Client.getSignedUrl('getObject', {
-            Bucket,
-            Key: key,
-        })
-
-        return res.status(200).json({
-            url,
-            key,
-        })
     }
 
     res.status(405).send('Method Not Allowed')
