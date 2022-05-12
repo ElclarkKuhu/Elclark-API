@@ -6,9 +6,6 @@ export default async (req, res) => {
         return res.status(200).send('ok')
     }
 
-    const auth = authenticate(req.headers.authorization)
-    if (!auth) return res.status(401).send('Unauthorized')
-
     if (req.method === 'POST') {
         let data = req.body
 
