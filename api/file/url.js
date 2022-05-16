@@ -1,4 +1,3 @@
-import authenticate from '../../components/authenticate.js'
 import { S3Client, Bucket } from '../../components/s3.js'
 
 export default async (req, res) => {
